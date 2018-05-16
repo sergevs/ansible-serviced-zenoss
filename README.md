@@ -1,0 +1,40 @@
+# ansible-serviced-zenoss
+Ansible playbook to deploy docker, [serviced](https://github.com/control-center/serviced) and [zenoss monitoring system](https://www.zenoss.com)
+
+# Overview
+The primary purpose of the playbook is to prepare the environment which is required to run zenoss:
+* deploy docker with lvm storage thin pool 
+* deploy serviced according to [requirements](https://www.zenoss.com/services-support/documentation/cc-install-guide) optionally deploy a serviced cluster, which in the turn can be used to implement zenoss distributed monitoring
+* deploy zenoss
+
+# Configuration
+The configuration options are documented at [group_vars](group_vars) files. You can amend variables there or override it [site_vars.yml](site_vars.yml)
+Put hosts to the [hosts](hosts). It's possible to deploy only docker.
+
+## Host variables:
+* **lvm_dev**   : block device for lvm and docker thin pool. the value of global variable will be used if not set.
+* **pool_name** : name of serviced pool to assign host to. the **default** pool is used if not set.
+
+## Tags:
+* **prepare**  : prepare environment
+* **docker**   : deploy docker
+* **serviced** : deploy serviced
+* **zenoss**   : deploy zenoss
+
+# Usage
+After required configuration prepared you can use [setup](setup) script to start deployment.
+```
+  ./setup
+```
+
+# Requirements
+At least one spare partition(>= 30 Gb) must be available and configured(**lvm_dev**) for docker and zenoss storage pools.
+4 Gb RAM to run serviced services or 24 Gb to run zenoss
+
+OS: Redhat / CentOS 7
+
+[ansible](https://www.ansible.com): 2.3.0
+
+# Testing
+The playbook tested for serviced 1.5.0 and zenoss 6.1.2. Google cloud host is used for deployment as a reproducible clean environment.
+For a convenience [Terraform](https://www.terraform.io) script is supplied, see [zenoss.tf](zenoss.tf)

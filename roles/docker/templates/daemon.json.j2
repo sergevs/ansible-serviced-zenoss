@@ -1,0 +1,11 @@
+{
+  "storage-driver": "devicemapper",
+  "log-level": "warn",
+  "storage-opts": ["dm.mountopt=discard", "dm.thinpooldev=/dev/mapper/{{ lvg_name }}-docker--pool"]
+  {% if SERVICED_MASTER_IP is defined %}
+  , "insecure-registries": ["{{ SERVICED_MASTER_IP }}:5000"]
+  {% endif %}
+  {% if docker_daemon_json is defined and docker_daemon_json | length >0 %}
+  , {{ docker_daemon_json }}
+  {% endif %}
+}

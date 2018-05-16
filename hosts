@@ -1,0 +1,11 @@
+# put you host(s) in the docker section
+[docker]
+hat1  lvm_dev=/dev/sdb
+
+# don't remove the below sections
+# comment the docker line if you want to setup only docker
+[serviced:children]
+docker
+
+[zenoss:children]
+docker

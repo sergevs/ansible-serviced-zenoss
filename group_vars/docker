@@ -1,0 +1,16 @@
+# install systemd docker droplet if you need to customize systemd behaviour
+# please note that docker parameters are in daemon.json template
+
+systemd_docker_droplet: false
+
+# docker package version to install
+docker_package: "docker-ce-17.09.0.ce"
+
+# docker thinpool data size in percents of VG
+docker_thinpool_data_size: "{% if only_docker | bool %}95{% else %}49{% endif %}"
+
+# docker thinpool metadata size in percents of VG
+docker_thinpool_metadata_size: 2
+
+# additional lines for docker daemon.json configuration
+docker_daemon_json: ""

@@ -1,0 +1,45 @@
+- block:
+  - name: create workdir directory
+    file: path={{ inventory_dir }}/workdir state=directory
+
+  - name: check if ssh keys already exists
+    stat: path={{ inventory_dir }}/workdir/id_rsa
+    register: ssh_key
+
+  - name: generate ssh keypair
+    command: ssh-keygen -q -N "" -t rsa -b 2048  -f {{ inventory_dir }}/workdir/id_rsa
+    when: ssh_key.stat.isreg is not defined
+
+  - name: make authorized keys
+    copy: src={{ inventory_dir }}/workdir/id_rsa.pub dest={{ inventory_dir }}/workdir/authorized_keys
+
+  - name: generate known hosts
+    shell: ssh-keyscan -trsa {{ groups['serviced']|join(' ') }} > {{ inventory_dir }}/workdir/known_hosts
+
+  run_once: true
+  become: false
+  delegate_to: localhost
+  tags: 
+  - ssh_key
+  - user
+
+- name: create serviced user
+  user: name={{ serviced_user }} comment="Serviced user" groups=wheel,serviced,docker home=/home/{{ serviced_user }}
+  tags: user
+
+- name: ensure .ssh dir
+  file: dest=/home/{{ serviced_user }}/.ssh state=directory mode=700
+  become: true
+  become_user: "{{ serviced_user }}"
+  tags: user
+
+- name: distribute ssh files and keys
+  copy: src={{ inventory_dir }}/workdir/{{ item }} dest=.ssh/{{ item }} mode=600
+  with_items:
+  - id_rsa
+  - id_rsa.pub
+  - authorized_keys
+  - known_hosts
+  become: true
+  become_user: "{{ serviced_user }}"
+  tags: user

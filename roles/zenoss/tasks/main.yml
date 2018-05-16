@@ -1,0 +1,30 @@
+- name: install zenoss serviced template package
+  package: name={{ zenoss_service_package }}
+
+- name: add zenoss template
+  command: serviced template add {{ zenoss_service_template }}
+
+- name: deploy template to serviced default pool
+  shell: serviced template deploy `serviced template list | awk '/Zenoss.core/{print $1}'` default test
+
+- name: start zenoss
+  shell: serviced service start `serviced service list | awk '/Zenoss.core/{print $2}'`
+
+- name: wait until zenoss started, that can take up to 10 min
+  shell: curl -m10 -vvv -ks -H Host:zenoss5.zenoss.zenoss https://localhost 2>&1 | grep '< HTTP'
+  register: http_result
+  until: http_result.stdout.find('302') >= 0
+  retries: 30
+  delay: 10
+  ignore_errors: yes
+  args:
+    warn: false
+  tags: test
+
+- name: report status
+  command: serviced service status
+  register: zenoss_status
+  tags: test
+
+- debug: var=zenoss_status
+  tags: test

@@ -1,0 +1,116 @@
+- name: install packages
+  package: name={{ serviced_package }}
+
+- name: set SERVICED_MASTER
+  set_fact: SERVICED_MASTER={{ 1 if inventory_hostname == groups['serviced'][0] else 0 }}
+  tags: always
+
+- name: get serviced volume. failed status is normal for a new installation or when destroy_data set to true and can be ignored
+  command: lvdisplay {{ lvg_name }}/serviced-pool
+  register: lv_serviced
+  ignore_errors: yes
+
+- name: create serviced thin pool in zenoss group
+  command: serviced-storage create-thin-pool serviced {{ lvg_name }}
+  when: not ansible_check_mode and lv_serviced.rc != 0
+
+- name: deploy serviced config
+  template: src=serviced.j2 dest=/etc/default/serviced
+
+#- debug: msg="{{ SERVICED_MASTER }} {{ serviced_images }}"
+#  tags: always
+
+- block:
+  - name: download installers locally
+    local_action: get_url url={{ item }} dest={{ inventory_dir }}/workdir/{{ item | basename }}
+    with_items: "{{ serviced_images }}"
+    when: images_local_download
+    become: false
+    run_once: true
+
+  - name: copy installers to serviced master host
+    copy: src={{ inventory_dir }}/workdir/{{ item | basename }} dest=/tmp/{{ item | basename }} mode=755
+    with_items: "{{ serviced_images }}"
+    when: images_local_download
+
+  - name: download installers to serviced master host
+    get_url: url={{ item }} dest=/tmp/{{ item | basename }} mode=755
+    with_items: "{{ serviced_images }}"
+    when: not images_local_download
+    become: false
+    run_once: true
+
+  - name: load images to docker
+    command: ./{{ item | basename }} -y chdir=/tmp
+    with_items: "{{ serviced_images }}"
+  
+  - name: remove installers
+    file: dest=/tmp/{{ item | basename }} state=absent
+    with_items: "{{ serviced_images }}"
+
+  when: serviced_images is defined and SERVICED_MASTER == "1"
+  tags: dl_images
+
+- name: start serviced
+  service: name=serviced state=restarted enabled=yes
+
+- name: wait for delegate service to come online
+  wait_for: port=4979 
+  when: SERVICED_MASTER  == "0"
+  tags: test
+
+- block:
+  - name: wait for master service to come online, this can take up to 5 min
+    wait_for: port=443 timeout=600
+
+  - name: report healthcheck
+    command: serviced healthcheck
+    register: serviced_health
+
+  - debug: var=serviced_health
+
+  when: SERVICED_MASTER == "1"
+  tags: test
+
+- include: ssh-auth.yml
+  when: not ansible_check_mode and serviced_user is defined
+  tags: user
+
+- name: register master host
+  command: serviced host add --register {{ ansible_hostname }}:4979 default
+  when: SERVICED_MASTER == "1"
+
+- name: add pools
+  shell: serviced pool add {{ hostvars[item]['pool_name'] }}
+  with_items: "{{ groups['serviced'] }}"
+  when: SERVICED_MASTER == "1" and item != groups['serviced'][0] and hostvars[item]['pool_name'] is defined
+  tags: delegate
+
+- name: add delegate hosts
+  shell: serviced host add {{ item }}:4979 {{ hostvars[item]['pool_name'] | default('default') }} | awk '/delegate/{ print $6 }'
+  with_items: "{{ groups['serviced'] }}"
+  when: SERVICED_MASTER == "1" and item != groups['serviced'][0]
+  tags: delegate
+  register: delegate_key
+
+- name: fetch keys
+  fetch: src={{ item.stdout }} dest={{ inventory_dir }}/workdir/{{ item.item }}-delegate.key flat=yes
+  with_items: "{{ delegate_key.results }}"
+  when: item.changed and SERVICED_MASTER == "1"
+  tags: delegate
+
+#- name: identify delegate key is exist
+#  local_action: stat path={{ inventory_dir }}/workdir/{{ inventory_hostname }}-delegate.key
+#  when: SERVICED_MASTER == "0"
+#  register: delegate_file
+#  tags: delegate
+
+- name: copy delegate key to remote
+  copy: src={{ inventory_dir }}/workdir/{{ inventory_hostname }}-delegate.key dest=/tmp/{{ inventory_hostname }}-delegate.key
+  when: SERVICED_MASTER == "0"
+  tags: delegate
+  
+- name: register the delegate key
+  command: serviced host register /tmp/{{ inventory_hostname }}-delegate.key
+  when:  SERVICED_MASTER == "0"
+  tags: delegate

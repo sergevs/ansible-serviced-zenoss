@@ -1,0 +1,40 @@
+# devices to use for lvm group
+# please note that the same volume group will be used for docker and serviced
+# i.e. it's not supposed that docker and serviced will be located on different volume groups
+# however you can define different devices using host variable with the same name
+lvm_dev: "/dev/sdb"
+
+# volume group name
+lvg_name: "zenoss"
+
+# destroy data ?
+destroy_data: false
+
+# the playbook can also be used to setup just the docker environment
+# this variable has the same effect as delegate_use_nfs ( see below )
+# both of variables impacts to the size of docker thin pool allocation:
+# if only_docker set to true :
+# - all thinpool space will be dedicated to docker
+# - serviced ( zenoss control center ) will not be installed
+# if only_docker set to false and delegate_use_nfs true
+# - all thinpool space will be dedicated to docker
+# if only_docker set to false and delegate_use_nfs false
+# - thinpool space will be distributed equally
+only_docker: "{% if 'serviced' in groups and groups['serviced'] | count > 0  %}false{% else %}true{% endif %}"
+
+# repository configuration
+repo_config:
+  file_name: serviced.repo
+  content: |
+    [zenoss-stable]
+    name = Zenoss Stable Repository
+    baseurl = http://get.zenoss.io/yum/zenoss/stable/centos/el7/os/x86_64
+    enabled=1
+    gpgcheck=0
+    gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-ZENOSS
+
+    [docker-ce]
+    name = docker ce
+    baseurl = https://download.docker.com/linux/centos/7/x86_64/stable
+    gpgcheck=0
+    exclude=docker-ce-17.12* docker-ce-18.03*

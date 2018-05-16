@@ -1,0 +1,30 @@
+---
+- name: setup environment
+  hosts: all
+  tasks:
+    - include_vars: "{% if site is not defined %}site_vars.yml{% else %}{{ site }}.site_vars.yml{% endif %}"
+  tags: always
+
+- name: setup environment
+  hosts: all
+  roles:
+    - prepare
+  tags: prepare
+
+- name: setup docker
+  hosts: docker
+  roles:
+    - docker
+  tags: docker
+
+- name: setup serviced control center
+  hosts: serviced
+  roles:
+    - serviced
+  tags: serviced
+
+- name: setup zenoss
+  hosts: zenoss
+  roles:
+    - { role: zenoss, when: play_hosts.index(inventory_hostname) == 0 }
+  tags: zenoss

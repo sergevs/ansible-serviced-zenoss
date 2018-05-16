@@ -1,0 +1,282 @@
+# This file content should conform to systemd, i.e. VARIABLE=value
+
+# Need to set $HOME so Docker client can find .dockercfg
+# HOME=/root
+
+# Need to set $TMPDIR so backups can have a place to spool snapshots and images
+# for backup
+# TMPDIR=/tmp
+
+# Set the number of processors used by serviced
+# GOMAXPROCS=2
+
+# Set enable/disable the master role, set to 1/0, respectively
+SERVICED_MASTER={{SERVICED_MASTER}}
+
+# The default ip address used whe connecting to SERVICED_STATS_PORT, SERVICED_LOGSTASH_ES, and SERVICED_LOG_ADDRESS
+SERVICED_MASTER_IP={{SERVICED_MASTER_IP}}
+
+# The default resource pool for the serviced master
+# SERVICED_MASTER_POOLID=default
+
+# Set the the zookeeper ensemble, multiple masters should be comma separated
+SERVICED_ZK={{SERVICED_MASTER_IP}}:2181
+
+# Set the local docker registry
+SERVICED_DOCKER_REGISTRY={{SERVICED_MASTER_IP}}:5000
+
+# Set the outbound IP that serviced will broadcast on
+# SERVICED_OUTBOUND_IP=10.0.0.29
+
+# Set the static IPs this host can advertize
+# SERVICED_STATIC_IPS=10.0.0.30,10.0.0.31
+
+# Set the default serviced RPC endpoint to dial
+SERVICED_ENDPOINT={{SERVICED_MASTER_IP}}:4979
+
+# Set the max number of rpc clients (pool) to an endpoint
+# SERVICED_MAX_RPC_CLIENTS=3
+
+# Set the RPC port to listen on
+# SERVICED_RPC_PORT=4979
+
+# Enable server certificate verification for TLS RPC request
+# SERVICED_RPC_CERT_VERIFY=false
+
+# Disable TLS for RPC connection, TLS is enabled by default
+# SERVICED_RPC_DISABLE_TLS=false
+
+# Set the minimum supported TLS version for RPC connections, valid values VersionTLS10|VersionTLS11|VersionTLS12
+# SERVICED_RPC_TLS_MIN_VERSION=VersionTLS10
+
+# Set the supported TLS ciphers for RPC connections
+# SERVICED_RPC_TLS_CIPHERS=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+
+# Set the UI port address to use: port, :port, ip:port
+# SERVICED_UI_PORT=:443
+
+# Set the frequency in seconds that the UI will poll serviced for updates
+# SERVICED_UI_POLL_FREQUENCY=3
+
+# Set the mux port to listen on
+# SERVICED_MUX_PORT=22250
+
+# Disable TLS for muxed connections. TLS is enabled by default
+# SERVICED_MUX_DISABLE_TLS=0
+
+# Set the minimum supported TLS version for MUX connections, valid values VersionTLS10|VersionTLS11|VersionTLS12
+# SERVICED_MUX_TLS_MIN_VERSION=VersionTLS10
+
+# Set the supported TLS ciphers for MUX connections
+# SERVICED_MUX_TLS_CIPHERS=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+
+# Set the ISVCS path for serviced internal data
+# SERVICED_ISVCS_PATH=/opt/serviced/var/isvcs
+
+# Set the VOLUMES path for serviced application data
+# SERVICED_VOLUMES_PATH=/opt/serviced/var/volumes
+
+# Set the BACKUPS path for serviced backups
+# SERVICED_BACKUPS_PATH=/opt/serviced/var/backups
+
+# Set the LOG_PATH for serviced access and audit logs. Note that regular serviced operational messages are written to journald.
+# SERVICED_LOG_PATH=/var/log/serviced
+
+# Set the TLS keyfile
+# SERVICED_KEY_FILE=/etc/....
+
+# Set the TLS certfile
+# SERVICED_CERT_FILE=/etc/....
+# Set the minimum supported TLS version for HTTP connections, valid values VersionTLS10|VersionTLS11|VersionTLS12
+# SERVICED_TLS_MIN_VERSION=VersionTLS10
+
+# Set the supported TLS ciphers for HTTP connections
+# SERVICED_TLS_CIPHERS=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_3DES_EDE_CBC_SHA,TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_256_GCM_SHA384
+
+# Set the driver type on the master for the distributed file system (rsync/btrfs/devicemapper)
+# SERVICED_FS_TYPE=devicemapper
+
+# Additional device mapper storage arguments
+# SERVICED_DM_ARGS=
+# Device mapper dm.basesize parameter.  Specifies the size to use when creating the base device.  Note that
+# the device created is a sparse device.
+# SERVICED_DM_BASESIZE=100G
+
+# Device mapper dm.loopdatasize parameter.  Specifies the size to use when creating the loopback file for
+# the “data” device which is used for the thin pool.  The default size is 100G.  The file is sparse, so
+# it will not initially take up this much space.
+# SERVICED_DM_LOOPDATASIZE=100G
+
+# Device mapper dm.loopmetadatasize parameter.  Specifies the size to use when creating the loopback file
+# for the “metadata” device which is used for the thin pool. The default size is 2G.  The file is sparse,
+# so it will not initially take up this much space.
+# SERVICED_DM_LOOPMETADATASIZE=2G
+
+# Device mapper dm.thinpooldev parameter.  Specifies a custom block storage device to use for the thin pool.
+SERVICED_DM_THINPOOLDEV=/dev/mapper/{{ lvg_name }}-serviced--pool
+
+# The frequency (in seconds) that low level device mapper storage stats should be refreshed
+# SERVICED_STORAGE_STATS_UPDATE_INTERVAL=300
+
+# Set to true to allow use of loopback files (instead of thin pools) with devicemapper for serviced storage.
+# NOTE: This is not recommended for production use.
+# SERVICED_ALLOW_LOOP_BACK=false
+
+# Set the max stopped container age (in seconds) before serviced will remove it
+#    86400 = number of seconds in one day = 24 hr/day * 60 min/hr * 60 sec/min
+# SERVICED_MAX_CONTAINER_AGE=86400
+
+# Set the subnet that dynamic endpoints use, inside the containers (CIDR notation)
+# SERVICED_VIRTUAL_ADDRESS_SUBNET=10.3.0.0/16
+
+# Set the loglevel for serviced
+SERVICED_LOG_LEVEL=2
+
+# Set the address to which to send logs
+SERVICED_LOG_ADDRESS={{SERVICED_MASTER_IP}}:5042
+
+# Set the address for the logstash elastic search
+SERVICED_LOGSTASH_ES={{SERVICED_MASTER_IP}}:9100
+
+# Set the age (in days) of logstash data to keep
+# SERVICED_LOGSTASH_MAX_DAYS=14
+
+# Max size of Logstash data to keep in gigabytes
+# SERVICED_LOGSTASH_MAX_SIZE=10
+
+# Logstash purging cycle time in hours
+# SERVICED_LOGSTASH_CYCLE_TIME=6
+
+# Set the default serviced stats endpoint to use
+SERVICED_STATS_PORT={{SERVICED_MASTER_IP}}:8443
+
+# Set the interval (in seconds) for host performance collection
+# SERVICED_STATS_PERIOD=10
+#
+# Set the length of time in seconds to cache stats on running services
+# for the UI
+# SERVICED_SVCSTATS_CACHE_TIMEOUT=5
+
+# Set the port on which to listen for profiler connections (-1 to disable)
+# SERVICED_DEBUG_PORT=6006
+
+# Set arguments to internal services.  Variables of the form
+#   SERVICED_ISVCS_ENV_%d (where %d is an integer from 0 to N, with
+#   no gaps) will be used to set the specified environment variable
+#   for the corresponding internal service.  The value of the variable
+#   is of the form SVC:KEY=VAL, where service is the name of the
+#   internal service, KEY is the environment variable to set for that
+#   service, and VAL is the value to which to set the variable.
+# SERVICED_ISVCS_ENV_0=elasticsearch-logstash:ES_JAVA_OPTS=-Xmx4g
+
+# Set the user group that can log in to control center
+#   wheel is the default on RHEL and sudo is the default on Ubuntu
+# SERVICED_ADMIN_GROUP=wheel
+
+# Set to 0 in order to disable root user control center login
+# SERVICED_ALLOW_ROOT_LOGIN=1
+
+# Max number tracked connections for iptables
+# SERVICED_IPTABLES_MAX_CONNECTIONS=655360
+
+# The number of hours a snapshot is retained before removal.
+# To disable snapshot removal, set the value to 0.
+# SERVICED_SNAPSHOT_TTL=12
+
+# Set to 0 in order to prevent this host from attempting to mount the DFS
+# Default: 1
+SERVICED_NFS_CLIENT=0
+
+# Overrides the default for the service migration image.
+# SERVICED_SERVICE_MIGRATION_TAG=1.0.2
+
+# Enables the following isvcs to run on the host (if not the master)
+# SERVICED_ISVCS_START=celery,elasticsearch,logstash,opentsdb,docker-registry,zookeeper,kibana
+
+# Specify the id no. of the zookeeper cluster node (must be unique amongst all
+# of the nodes in the cluster)
+# SERVICED_ISVCS_ZOOKEEPER_ID=
+
+# Specify nodes in the zookeeper quorum if this host is running as part of the
+# zookeeper quorum.  This takes the form of <ZKID#>@<IPAddress>:<PeerPort>:<LeaderPort>
+# SERVICED_ISVCS_ZOOKEEPER_QUORUM=1@host1:2888:3888,2@host2:2888:3888,3@host3:2888:3888
+
+# Specify the log driver for all docker containers logs, including isvc containers on the master node.
+# Direct port of Docker --log-driver option. Values include json-file, syslog, journald, gelf, fluentd, and none.
+# SERVICED_DOCKER_LOG_DRIVER=json-file
+
+# Comma-separated list of key=value options, corresponding to Docker --log-opt options.
+# For log drivers which do not need additional arguments (e.g. journald), use a single comma as the value
+# of SERVICED_DOCKER_LOG_CONFIG and the system will use the defaults for that type of log driver.
+# SERVICED_DOCKER_LOG_CONFIG=max-file=5,max-size=10m
+
+# Docker DNS configuration used for running containers.  Multiple values should be comma separated.
+# SERVICED_DOCKER_DNS=
+
+# Arbitrary serviced daemon args
+# SERVICED_OPTS=
+SERVICED_OPTS="--mount *,/z,/z"
+
+# Percent of tenant volume size that is assumed to be used.  This is used to determine if the volume has enough
+# free space for creating a snapshot.  Defaults to 20
+# SERVICED_SNAPSHOT_USE_PERCENT=20
+
+# Timeout in seconds for a zookeeper session to timeout.  Defaults to 15.
+# SERVICED_ZK_SESSION_TIMEOUT=15
+
+# Timeout in seconds for a zookeeper network connection. Defaults to 1.
+# SERVICED_ZK_CONNECT_TIMEOUT=1
+
+# Delay in seconds between connection attempts for different hosts when SERVICED_ZK contains addressses to multiple zookeepers. Defaults to 0
+# SERVICED_ZK_PER_HOST_CONNECT_DELAY=0
+
+# The initial delay in seconds before attempting to reconnect after failing to connect to all zookeepers identified by SERVICED_ZK. Defaults to 1
+# SERVICED_ZK_RECONNECT_START_DELAY=1
+
+# The max delay in seconds before attempting to reconnect after failing to connect to all zookeepers identified by SERVICED_ZK. Defaults to 1
+# SERVICED_ZK_RECONNECT_MAX_DELAY=1
+
+# Time (in seconds) to wait for elastic search to start
+# SERVICED_ES_STARTUP_TIMEOUT=240
+
+# The timeout for performing a DFS snapshot (in seconds)
+# SERVICED_MAX_DFS_TIMEOUT=300
+
+# The timeout for creating rpc connections (in seconds)
+# SERVICED_RPC_DIAL_TIMEOUT=30
+
+# Expiration time in seconds for delegate authentication tokens.  Defaults to 1 hour.
+# SERVICED_AUTH_TOKEN_EXPIRATION=3600
+
+# The path to the serviced controller binary.
+# SERVICED_CONTROLLER_BINARY=/opt/serviced/bin/serviced-controller
+
+# The default home directory.  This is the directory relative to which serviced will put files/directories/etc.
+# SERVICED_HOME=/opt/serviced
+
+# The default path for configuration files.  If not set, this will be the path given for SERVICED_HOME
+# followed by /etc
+# SERVICED_ETC_PATH=/opt/serviced/etc
+
+# A list of alias for this host, e.g., localhost.  Multiple values should be comma separated.
+# SERVICED_VHOST_ALIASES=
+
+# The max amount of time, in seconds, to wait for services to start/stop before starting/stopping services at the next run level
+# SERVICED_RUN_LEVEL_TIMEOUT=600
+
+# Whether a delegate should flush the conntrack table when a service with an assigned IP is started
+# SERVICED_CONNTRACK_FLUSH=false
+
+# The frequency in seconds to report storage stats to opentsdb
+# SERVICED_STORAGE_REPORT_INTERVAL=30
+
+# The amount of time in seconds for which serviced will consider storage
+# availability metrics in order to predict future availability
+# SERVICED_STORAGE_METRIC_MONITOR_WINDOW=300
+
+# The amount of time in the future in seconds serviced should predict storage
+# availability for the purposes of emergency shutdown
+# SERVICED_STORAGE_LOOKAHEAD_PERIOD=360
+
+# The amount of space the emergency shutdown algorithm should reserve when deciding to shut down
+SERVICED_STORAGE_MIN_FREE=0G

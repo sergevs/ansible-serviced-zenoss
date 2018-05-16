@@ -1,0 +1,62 @@
+- name: install packages
+  package: name={{ item }}
+  with_items:
+  - dnsmasq
+  - "{{ docker_package }}"
+
+- name: copy dnsmasq configuration
+  copy: src=dnsmasq-docker.conf dest=/etc/dnsmasq.d/dnsmasq-docker.conf
+
+- name: restart dnsmasq
+  service: name=dnsmasq state=restarted enabled=yes
+
+- name: create docker dir
+  file: dest=/etc/docker state=directory
+  tags: docker_conf
+
+- name: deploy daemon.json
+  template: src=daemon.json.j2 dest=/etc/docker/daemon.json
+  tags: docker_conf
+
+# install docker droplet
+- block:
+  - name: install systemd docker droplet dir
+    file: dest=/etc/systemd/system/docker.service.d state=directory
+
+  - name: install systemd docker droplet file
+    copy: src=systemd-docker.conf dest=/etc/systemd/system/docker.service.d/docker.conf
+
+  - name: reload systemctl
+    command: systemctl daemon-reload
+  when: systemd_docker_droplet
+  tags: systemd_docker_droplet
+
+- name: get docker volume. failed status is normal for a new installation or when destroy_data set to true and can be ignored
+  command: lvdisplay {{ lvg_name }}/docker-pool
+  register: lv_docker
+  ignore_errors: yes
+
+# create docker thin pool according to https://docs.docker.com/engine/userguide/storagedriver/device-mapper-driver/
+- block:
+  - name: create docker thinpool data volume
+    command: lvcreate --wipesignatures y -n docker-pool {{ lvg_name }} -l {{ docker_thinpool_data_size }}%VG
+
+  - name: create docker thinpool meta volume
+    command: lvcreate --wipesignatures y -n docker-poolmeta {{ lvg_name }} -l {{ docker_thinpool_metadata_size }}%VG
+
+  - name: convert data & meta volumes to thin pool
+    command: lvconvert -y --zero n -c 512K --thinpool {{ lvg_name }}/docker-pool --poolmetadata {{ lvg_name }}/docker-poolmeta
+  when: not ansible_check_mode and lv_docker.rc != 0
+
+- name: start docker
+  service: name=docker state=restarted enabled=yes
+
+- name: test docker
+  command: docker info
+  register: docker_info
+  tags: test
+
+- name: show docker info
+  debug: msg={{ docker_info.stdout_lines }}
+  when: not ansible_check_mode
+  tags: test

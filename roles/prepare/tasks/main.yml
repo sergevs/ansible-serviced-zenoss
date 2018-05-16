@@ -1,0 +1,63 @@
+- name: configure repository
+  copy: content={{ repo_config['content'] }} dest=/etc/yum.repos.d/{{ repo_config['file_name'] }}
+  when: repo_config['file_name'] is defined
+  tags: repo
+
+- name: make repository cache
+  command: yum makecache fast
+  args:
+    warn: false
+
+- name: ensure selinux disabled
+  selinux: state=disabled
+
+- name: ensure lvm2 package installed
+  package: name=lvm2 state=present
+
+- name: create workdir directory
+  local_action: file path={{ inventory_dir }}/workdir state=directory
+  become: false
+  run_once: true
+
+- name: stop serviced and docker, ignoring errors just in case it's not installed yet
+  service: name={{ item }} state=stopped enabled=no
+  with_items:
+  - serviced
+  - docker
+  ignore_errors: yes
+  when: destroy_data
+
+- name: get physical volumes
+  shell: pvdisplay | grep -P "PV Name *`echo {{ hostvars[inventory_hostname].lvm_dev | default(lvm_dev) }} | sed 's/ \+/|/'`"
+  register: pv
+  ignore_errors: yes
+
+- name: check volumes presense
+  debug: msg="WARNING physical volumes already exists, nothing will be created. Please remove physical volumes" 
+  when: not ansible_check_mode and pv.stdout_lines | count > 0 and not destroy_data
+
+- block:
+  - name: remove volumes
+    command: "{{ item }}"
+    with_items:
+    - "dmsetup remove_all"
+    - "vgremove -y {{ lvg_name }}"
+    - "pvremove {{ hostvars[inventory_hostname].lvm_dev | default(lvm_dev) }}"
+
+  - name: remove data
+    shell: "{{ item }}"
+    with_items:
+    - "rm -rf /var/lib/docker"
+    - "rm -rf /opt/serviced/var/volumes/{*,.devicemapper}"
+  when: not ansible_check_mode and pv.stdout_lines | count > 0 and destroy_data
+
+- name: create physical volumes and volume group
+  command: "{{ item }}"
+  with_items:
+  - "pvcreate -y {{ hostvars[inventory_hostname].lvm_dev | default(lvm_dev) }}"
+  - "vgcreate -y {{ lvg_name }} {{ hostvars[inventory_hostname].lvm_dev | default(lvm_dev) }}"
+  when: not ansible_check_mode and ( destroy_data or pv.stdout_lines | count == 0 )
+
+- name: get control center master ip
+  set_fact: SERVICED_MASTER_IP={% if 'ansible_default_ipv4' in hostvars[groups['serviced'][0]] %}{{ hostvars[groups['serviced'][0]]['ansible_default_ipv4']['address'] }}{% else %}{{ MY_SERVICED_MASTER_IP }}{% endif %}
+  when: not only_docker | bool
