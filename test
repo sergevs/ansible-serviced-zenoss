@@ -1,0 +1,65 @@
+#!/bin/bash
+#
+# The script to automate testing at google cloud
+# If gce account is specified as first parameter,
+# The deployment starts automatically
+#
+# Please make sure you have setup terraform and google cloud account before using the script
+#
+
+set -e
+gcloud_user="$1"
+
+hfile="gc.hosts"
+touch gc.site_vars.yml
+
+# remove comment sign in line below if you want to spawn more than one instance
+terraform apply -auto-approve #-var the_count=2
+
+echo '[docker]' > $hfile
+
+ip=""
+for h in `terraform output nat_ip | tr , ' '`
+do
+  ssh-keygen -R $h
+  ssh-keyscan $h >> ~/.ssh/known_hosts
+
+  if [[ -z $ip ]]; then
+    ip=$h
+    echo $h >> $hfile
+  else
+    echo "$h pool_name=remote1" >> $hfile
+  fi
+done
+
+cat <<EOF >> $hfile
+
+[serviced:children]
+docker
+
+[zenoss:children]
+docker
+EOF
+
+if [[ -n $gcloud_user ]]; then
+  ./setup gc --user $gcloud_user --become 
+  cat <<EOF
+=================================================================================
+ If you don't have resolving of the zenoss host, you have to add 
+ the line below to hosts file on machine from where you are going to visit zenoss
+
+ $ip zenoss5.zenoss.zenoss
+
+ Than you can visit https://zenoss5.zenoss.zenoss
+=================================================================================
+EOF
+else
+  cat <<EOF
+
+======================================================
+ User is not specified as first parameter
+ In the order to test run:"
+ ./setup gc --user <your gcloud ssh username> --become
+======================================================
+EOF
+fi

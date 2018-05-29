@@ -21,6 +21,45 @@
     warn: false
   tags: test
 
+- name: reset zenoss password
+  raw: serviced service attach zope sudo -Hi -u zenoss bash -c $'zendmd --commit --script=<(echo "app.acl_users.userManager.updateUserPassword(\'admin\', \'{{ admin_password }}\')")'
+  when: admin_password is defined
+  tags: password
+
+- name: run the configuration script, must allocate tty so script module is used
+  script: zsrv-config {{ hostvars[item].ansible_hostname }} {{ hostvars[item].pool_name | default('default') }}
+  with_items: "{{ groups['zenoss'] }}"
+  when: groups['zenoss'] | count > 1 and item != groups['zenoss'][0]
+  tags: collector
+
+- name: remove wrong properties
+  raw: serviced service attach zope sudo -Hi -u zenoss bash -c $'zendmd --commit --script=<(echo "zport.dmd.Monitors.Performance.localhost.deleteZenProperty(\'{{ item }}\')")'
+  with_items:
+  - defaultRRDCreateCommand
+  - renderurl 
+  tags: collector
+
+- name: add monitors
+  raw: serviced service attach zope sudo -Hi -u zenoss bash -c $'zendmd --commit --script=<(echo "zport.dmd.Monitors.Performance.manage_addMonitor(\'{{ item }}\')")'
+  with_items: "{{ groups['zenoss'] }}"
+  when: groups['zenoss'] | count > 1 and item != groups['zenoss'][0]
+  tags: collector
+
+- name: assign ip for zensyslog
+  command: serviced service assign-ip {{ hostvars[item].ansible_hostname }}/zensyslog
+  with_items: "{{ groups['zenoss'] }}"
+  when: groups['zenoss'] | count > 1 and item != groups['zenoss'][0]
+  tags: collector
+
+- name: assign ip for zentrap
+  command: serviced service assign-ip {{ hostvars[item].ansible_hostname }}/zentrap
+  with_items: "{{ groups['zenoss'] }}"
+  when: groups['zenoss'] | count > 1 and item != groups['zenoss'][0]
+  tags: collector
+
+- name: start all services
+  command: serviced service start Zenoss.core
+
 - name: report status
   command: serviced service status
   register: zenoss_status

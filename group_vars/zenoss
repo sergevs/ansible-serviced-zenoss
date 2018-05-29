@@ -4,3 +4,7 @@ zenoss_service_package: "zenoss-core-service-6.1.2"
 
 # full path to zenoss services definition file
 zenoss_service_template: "/opt/serviced/templates/zenoss-core-6.1.2_1.json"
+
+# set zenoss admin password to skip boring dialog of first startup
+# uncomment the line below and supply appropriate password
+#admin_password: admin

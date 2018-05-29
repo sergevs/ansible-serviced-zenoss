@@ -1,0 +1,50 @@
+#!/bin/bash
+#
+# the script to configure distributed collector for zenoss
+# implemented by cloning existing collector & services supplied by default template
+#
+
+# parameters for the new collector, name have to be match serviced host
+collectorName=$1
+poolId=$2
+
+# services to clone
+serviceConfig=(collectorredis MetricShipper zencommand zenmodeler zenperfsnmp zenping zenprocess zenpython zenstatus zensyslog zentrap zminion)
+
+# a function to make "service editor". unfortunately -e option does not accept parameters
+function makeEditor {
+  sKey=$1
+  sVal=$2
+
+  cat <<EOF > /tmp/zsrv-editor
+#!/bin/bash
+
+sed -i -e "s/\(\"$sKey\": \"\).\+\(\"\)/\1$sVal\2/" \$1
+EOF
+
+  chmod +x /tmp/zsrv-editor
+}
+
+# actual work performed here
+
+echo "Cloning & configuring collector $collectorName"
+collectorId=`serviced service clone Zenoss.core/Zenoss/Collection/localhost/localhost`
+makeEditor "Name" "$collectorName"
+serviced service edit -e /tmp/zsrv-editor $collectorId
+makeEditor "PoolID" "$poolId"
+serviced service edit -e /tmp/zsrv-editor $collectorId
+
+
+for serviceItem in ${serviceConfig[*]}
+do
+  echo "Cloning & configuring service $serviceItem"
+  serviceId=`serviced service clone Zenoss.core/Zenoss/Collection/localhost/localhost/$serviceItem`
+  makeEditor "ParentServiceID" "$collectorId"
+  serviced service edit -e /tmp/zsrv-editor $serviceId
+  makeEditor "Name" "$serviceItem"
+  serviced service edit -e /tmp/zsrv-editor $serviceId
+  makeEditor "PoolID" "$poolId"
+  serviced service edit -e /tmp/zsrv-editor $serviceId
+done
+
+#rm -f /tmp/zsrv-editor

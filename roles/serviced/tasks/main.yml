@@ -87,7 +87,7 @@
   tags: delegate
 
 - name: add delegate hosts
-  shell: serviced host add {{ item }}:4979 {{ hostvars[item]['pool_name'] | default('default') }} | awk '/delegate/{ print $6 }'
+  shell: serviced host add {{ hostvars[item].ansible_hostname }}:4979 {{ hostvars[item]['pool_name'] | default('default') }} | awk '/delegate/{ print $6 }'
   with_items: "{{ groups['serviced'] }}"
   when: SERVICED_MASTER == "1" and item != groups['serviced'][0]
   tags: delegate
@@ -98,12 +98,6 @@
   with_items: "{{ delegate_key.results }}"
   when: item.changed and SERVICED_MASTER == "1"
   tags: delegate
-
-#- name: identify delegate key is exist
-#  local_action: stat path={{ inventory_dir }}/workdir/{{ inventory_hostname }}-delegate.key
-#  when: SERVICED_MASTER == "0"
-#  register: delegate_file
-#  tags: delegate
 
 - name: copy delegate key to remote
   copy: src={{ inventory_dir }}/workdir/{{ inventory_hostname }}-delegate.key dest=/tmp/{{ inventory_hostname }}-delegate.key

@@ -24,7 +24,7 @@
   - user
 
 - name: create serviced user
-  user: name={{ serviced_user }} comment="Serviced user" groups=wheel,serviced,docker home=/home/{{ serviced_user }}
+  user: name={{ serviced_user }} comment="Serviced user" groups=wheel,serviced,docker home=/home/{{ serviced_user }} password={{ serviced_user_password | default('!!') }}
   tags: user
 
 - name: ensure .ssh dir

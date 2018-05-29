@@ -7,10 +7,13 @@
 # on delegate hosts
 delegate_use_nfs: true
 
-# create a user which will be able to manage control center cluster
+# create a user which will be able to manage control center
 # it will belong to serviced and docker groups, also ssh keys will be generated to allow passwordless auth between hosts
-# comment the line below if you don't want that
 serviced_user: serviced
+
+# hash of the serviced user password, the password is: serviced
+# uncomment the line below and supply appropriate hash if you want to set it
+#serviced_user_password: "$1$C.C6utQP$eZKwU1tWfhDP95Xi763FO/"
 
 # serviced package name and version to install
 serviced_package: "serviced-1.5.0"
