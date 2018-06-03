@@ -1,0 +1,12 @@
+- name: install snmp package
+  package: name=net-snmp state=present
+
+- name: make snmp config
+  template: src=snmpd.conf.j2 dest=/etc/snmp/snmpd.conf
+
+- name: create snmpv3 user and password
+  command: net-snmp-create-v3-user -A TheZenMonA -X TheZenMonX -x DES -a MD5 zenoss
+  when: setup_snmp == "v3"
+
+- name: start snmpd
+  service: name=snmpd state=restarted enabled=yes

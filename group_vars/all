@@ -22,6 +22,9 @@ destroy_data: false
 # - thinpool space will be distributed equally
 only_docker: "{% if 'serviced' in groups and groups['serviced'] | count > 0  %}false{% else %}true{% endif %}"
 
+# setup snmpd server and configure snmp v2 or v3 
+setup_snmp: "v2"
+
 # repository configuration
 repo_config:
   file_name: serviced.repo

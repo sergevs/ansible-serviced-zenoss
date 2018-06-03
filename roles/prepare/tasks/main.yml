@@ -61,3 +61,6 @@
 - name: get control center master ip
   set_fact: SERVICED_MASTER_IP={% if 'ansible_default_ipv4' in hostvars[groups['serviced'][0]] %}{{ hostvars[groups['serviced'][0]]['ansible_default_ipv4']['address'] }}{% else %}{{ MY_SERVICED_MASTER_IP }}{% endif %}
   when: not only_docker | bool
+
+- include: snmp.yml
+  when: setup_snmp is defined and ( setup_snmp == "v2" or setup_snmp == "v3" )

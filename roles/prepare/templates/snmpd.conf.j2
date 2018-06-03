@@ -1,0 +1,18 @@
+{% if setup_snmp == "v2" %}
+com2sec         notConfigUser  default       public
+group           notConfigGroup v1            notConfigUser
+group           notConfigGroup v2c           notConfigUser
+access          notConfigGroup ""            any  noauth exact systemview none none
+{% elif setup_snmp == "v3" %}
+com2sec         snmpV3User      default       public
+group           snmpV3group     usm           snmpV3User
+access          snmpV3Group     ""            usm priv exact systemview none none
+{% endif %}
+
+view            systemview     included      .1
+
+master  agentx
+agentxperms 770 770 daemon adgroup
+
+dontLogTCPWrappersConnects 1
+interface lo 24 1000000000
