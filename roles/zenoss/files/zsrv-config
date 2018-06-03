@@ -47,4 +47,14 @@ do
   serviced service edit -e /tmp/zsrv-editor $serviceId
 done
 
-#rm -f /tmp/zsrv-editor
+echo "Fix collectorredis ApplicationTemplate"
+
+cat <<EOF > /tmp/zsrv-editor
+#!/bin/bash
+
+sed -i -e 's/"ApplicationTemplate.\+redis.*/"ApplicationTemplate": "{{(parent .).Name}}_redis",/' \$1
+EOF
+
+serviced service edit -e /tmp/zsrv-editor Zenoss.core/Zenoss/Collection/localhost/$collectorName/collectorredis
+
+rm -f /tmp/zsrv-editor
