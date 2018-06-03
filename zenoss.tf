@@ -1,5 +1,5 @@
 variable "region_zone" {
-  default = "us-west1-a"
+  default = [ "europe-west3-b", "europe-west2-a" ]
 }
 
 variable "the_count" {
@@ -23,14 +23,14 @@ resource "google_compute_disk" "zenoss-disk" {
   count = "${var.the_count}"
   name = "zenoss-disk-${count.index}"
   size = 40
-  zone = "${var.region_zone}"
+  zone = "${element(var.region_zone, count.index)}"
 }
 
 resource "google_compute_instance" "default" {
   count = "${var.the_count}"
   name = "zenoss${count.index}"
   machine_type = "n1-highmem-4"
-  zone = "${var.region_zone}"
+  zone = "${element(var.region_zone, count.index)}"
   tags = ["zenoss"]
   depends_on = ["google_compute_disk.zenoss-disk"]
 
@@ -50,6 +50,10 @@ resource "google_compute_instance" "default" {
     access_config {
     }
   }
+
+  metadata_startup_script = <<SCRIPT
+echo "startup script"
+SCRIPT
 }
 
 output "instance_id" {
