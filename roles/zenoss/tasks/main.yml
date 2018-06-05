@@ -40,7 +40,7 @@
   tags: collector
 
 - name: add monitors
-  raw: serviced service attach zope sudo -Hi -u zenoss bash -c $'zendmd --commit --script=<(echo "zport.dmd.Monitors.Performance.manage_addMonitor(\'{{ item }}\')")'
+  raw: serviced service attach zope sudo -Hi -u zenoss bash -c $'zendmd --commit --script=<(echo "zport.dmd.Monitors.Performance.manage_addMonitor(\'{{ hostvars[item].ansible_hostname }}\')")'
   with_items: "{{ groups['zenoss'] }}"
   when: groups['zenoss'] | count > 1 and item != groups['zenoss'][0]
   tags: collector
@@ -57,7 +57,7 @@
   when: groups['zenoss'] | count > 1 and item != groups['zenoss'][0]
   tags: collector
 
-- name: start all services
+- name: start all collector services
   command: serviced service start Zenoss.core
 
 - name: report status
@@ -67,3 +67,7 @@
 
 - debug: var=zenoss_status
   tags: test
+
+- name: add monitoring for collector hosts
+  command: serviced service attach localhost/zenmodeler sudo -Hi -u zenoss zendisc run --deviceclass /Server/Linux -d {{ ansible_hostname }}
+  tags: collector
