@@ -34,7 +34,7 @@
   tags: user
 
 - name: distribute ssh files and keys
-  copy: src={{ inventory_dir }}/workdir/{{ item }} dest=.ssh/{{ item }} mode=600
+  copy: src={{ inventory_dir }}/workdir/{{ item }} dest=/home/{{ serviced_user }}/.ssh/{{ item }} mode=600
   with_items:
   - id_rsa
   - id_rsa.pub
