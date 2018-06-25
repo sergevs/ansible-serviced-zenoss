@@ -24,6 +24,8 @@
 - name: reset zenoss password
   raw: serviced service attach zope sudo -Hi -u zenoss bash -c $'zendmd --commit --script=<(echo "app.acl_users.userManager.updateUserPassword(\'admin\', \'{{ admin_password }}\')")'
   when: admin_password is defined
+  args:
+    executable: /bin/bash
   tags: password
 
 - name: run the configuration script, must allocate tty so script module is used
@@ -37,12 +39,16 @@
   with_items:
   - defaultRRDCreateCommand
   - renderurl 
+  args:
+    executable: /bin/bash
   tags: collector
 
 - name: add monitors
   raw: serviced service attach zope sudo -Hi -u zenoss bash -c $'zendmd --commit --script=<(echo "zport.dmd.Monitors.Performance.manage_addMonitor(\'{{ hostvars[item].ansible_hostname }}\')")'
   with_items: "{{ groups['zenoss'] }}"
   when: groups['zenoss'] | count > 1 and item != groups['zenoss'][0]
+  args:
+    executable: /bin/bash
   tags: collector
 
 - name: assign ip for zensyslog

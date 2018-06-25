@@ -13,8 +13,14 @@ gcloud_user="$1"
 hfile="gc.hosts"
 touch gc.site_vars.yml
 
-# remove comment sign in line below if you want to spawn more than one instance
-terraform apply -auto-approve #-var the_count=2
+# you can add the following params:
+# -var image=debian-9-stretch-v20180611 
+# -var image=ubuntu-1604-xenial-v20180612
+# -var the_count=2 
+terraform apply -auto-approve
+
+echo "Wait 10 sec to give gce a chance to complete setup :)"
+sleep 10
 
 echo '[docker]' > $hfile
 
@@ -38,7 +44,7 @@ cat <<EOF >> $hfile
 docker
 
 [zenoss:children]
-docker
+serviced
 EOF
 
 if [[ -n $gcloud_user ]]; then

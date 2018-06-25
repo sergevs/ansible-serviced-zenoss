@@ -31,10 +31,18 @@ After required configuration prepared you can use [setup](setup) script to start
 At least one spare partition(>= 30 Gb) must be available and configured(**lvm_dev**) for docker and zenoss storage pools.
 4 Gb RAM to run serviced services or 24 Gb to run zenoss
 
-OS: Redhat / CentOS 7
+Supported OS: 
+* Redhat / CentOS 7
+* Debian Stretch
+* Ubuntu Xenial
 
 [ansible](https://www.ansible.com): 2.3.0
 
 # Testing
 The playbook tested for serviced 1.5.0 and zenoss 6.1.2. Google cloud host is used for deployment as a reproducible clean environment.
 For a convenience [Terraform](https://www.terraform.io) script is supplied, see [zenoss.tf](zenoss.tf)
+
+See also [test](test) script to test full cycle deployment to google cloud:
+```
+  ./test <your google cloud ssh key username>
+``` 

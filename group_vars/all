@@ -27,7 +27,7 @@ setup_snmp: "v2"
 
 # repository configuration
 repo_config:
-  file_name: serviced.repo
+  file_name: /etc/yum.repos.d/serviced.repo
   content: |
     [zenoss-stable]
     name = Zenoss Stable Repository

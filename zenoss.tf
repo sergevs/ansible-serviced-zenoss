@@ -6,6 +6,11 @@ variable "the_count" {
   default = "1"
 }
 
+// alternative testing images debian-9-stretch-v20180611 , ubuntu-1604-xenial-v20180612
+variable "image" {
+  default = "centos-7-v20180507"
+}
+
 resource "google_compute_firewall" "default" {
   name = "zenoss-firewall"
   network = "default"
@@ -36,7 +41,7 @@ resource "google_compute_instance" "default" {
 
   boot_disk {
     initialize_params {
-      image = "centos-7-v20180507"
+      image = "${var.image}"
     }
   }
 
