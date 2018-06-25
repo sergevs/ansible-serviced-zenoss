@@ -41,3 +41,8 @@ Supported OS:
 # Testing
 The playbook tested for serviced 1.5.0 and zenoss 6.1.2. Google cloud host is used for deployment as a reproducible clean environment.
 For a convenience [Terraform](https://www.terraform.io) script is supplied, see [zenoss.tf](zenoss.tf)
+
+See also [test](test) script to test full cycle deployment to google cloud:
+```
+  ./test <your google cloud ssh key username>
+``` 
