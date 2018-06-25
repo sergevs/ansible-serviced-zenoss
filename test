@@ -19,9 +19,6 @@ touch gc.site_vars.yml
 # -var the_count=2 
 terraform apply -auto-approve
 
-echo "Wait 10 sec to give gce a chance to complete setup :)"
-sleep 10
-
 echo '[docker]' > $hfile
 
 ip=""
@@ -29,6 +26,12 @@ for h in `terraform output nat_ip | tr , ' '`
 do
   ssh-keygen -R $h
   ssh-keyscan $h >> ~/.ssh/known_hosts
+  while ! exec 6<>/dev/tcp/$h/22
+  do   
+    echo "Waiting for $h on 22 ..."
+  sleep 3
+  done
+  exec 6>&-
 
   if [[ -z $ip ]]; then
     ip=$h
