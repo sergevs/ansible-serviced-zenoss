@@ -5,7 +5,7 @@
 
 # if the delegate use NFS by default we don't need to allocate space for serviced volumes
 # on delegate hosts
-delegate_use_nfs: true
+delegate_use_nfs: false
 
 # create a user which will be able to manage control center
 # it will belong to serviced and docker groups, also ssh keys will be generated to allow passwordless auth between hosts
