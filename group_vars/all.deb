@@ -1,0 +1,31 @@
+#
+# Debian/Ubuntu settings
+#
+
+# snmpd package name
+snmp_package: snmpd
+
+# group for sudo user
+sudo_group: sudo
+
+# repo_config variable must be undefined for debian
+repo_config:
+
+# commands to configure required debian repositories
+repo_config_commands: 
+  - apt-get update
+  - apt-get install -y apt-transport-https ca-certificates curl software-properties-common python-selinux
+  - curl https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg | apt-key add -
+  - add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution | lower }} $(lsb_release -cs) stable"
+  - curl https://download.tuxfamily.org/ach/gpg | apt-key add -
+  - add-apt-repository "deb [arch=amd64] https://download.tuxfamily.org/ach/{{ ansible_distribution | lower }} $(lsb_release -cs) main"
+  - apt-get update
+
+# docker package
+docker_package: docker-ce=17.09.0~ce-0~{{ ansible_distribution | lower }}
+
+# serviced package
+serviced_package: serviced=1.5.0~{{ ansible_distribution | lower }}-ce.1
+
+# service definition package
+zenoss_service_package: zenoss-core-service=6.1.2-1

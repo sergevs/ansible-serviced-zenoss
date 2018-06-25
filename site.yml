@@ -3,6 +3,8 @@
   hosts: all
   tasks:
     - include_vars: "{% if site is not defined %}site_vars.yml{% else %}{{ site }}.site_vars.yml{% endif %}"
+    - include_vars: group_vars/all.deb
+      when: ansible_os_family == "Debian"
   tags: always
 
 - name: setup environment

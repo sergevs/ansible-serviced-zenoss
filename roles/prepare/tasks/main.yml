@@ -1,15 +1,19 @@
-- name: configure repository
-  copy: content={{ repo_config['content'] }} dest=/etc/yum.repos.d/{{ repo_config['file_name'] }}
+- name: configure repository by file
+  copy: content={{ repo_config['content'] }} dest={{ repo_config['file_name'] }}
   when: repo_config['file_name'] is defined
   tags: repo
 
-- name: make repository cache
-  command: yum makecache fast
+- name: configure repository by commands
+  shell: "{{ item }}"
+  with_items: "{{ repo_config_commands }}"
+  when: repo_config_commands is defined
   args:
     warn: false
+  tags: repo
 
 - name: ensure selinux disabled
   selinux: state=disabled
+  ignore_errors: yes
 
 - name: ensure lvm2 package installed
   package: name=lvm2 state=present

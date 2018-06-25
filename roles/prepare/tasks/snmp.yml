@@ -1,5 +1,5 @@
 - name: install snmp package
-  package: name=net-snmp state=present
+  package: name={{ snmp_package | default('net-snmp') }} state=present
 
 - name: make snmp config
   template: src=snmpd.conf.j2 dest=/etc/snmp/snmpd.conf
