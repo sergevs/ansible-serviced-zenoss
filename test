@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # The script to automate testing at google cloud
 # If gce account is specified as first parameter,
