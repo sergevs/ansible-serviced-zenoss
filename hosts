@@ -8,4 +8,4 @@ hat1  lvm_dev=/dev/sdb
 docker
 
 [zenoss:children]
-docker
+serviced
