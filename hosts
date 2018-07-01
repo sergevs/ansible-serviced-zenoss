@@ -1,4 +1,6 @@
-# put you host(s) in the docker section
+# put your host(s) to the docker section
+# please make sure lvm_dev block storage configured to a spare unused 
+# partition or disk with at least 30 Gb size on target host(s)
 [docker]
 hat1  lvm_dev=/dev/sdb
 
