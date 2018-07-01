@@ -22,10 +22,10 @@ repo_config_commands:
   - apt-get update
 
 # docker package
-docker_package: docker-ce=17.09.0~ce-0~{{ ansible_distribution | lower }}
+docker_package: docker-ce
 
 # serviced package
-serviced_package: serviced=1.5.0~{{ ansible_distribution | lower }}-ce.1
+serviced_package: serviced
 
 # service definition package
 zenoss_service_package: zenoss-core-service=6.1.2-1

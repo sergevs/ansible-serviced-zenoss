@@ -25,6 +25,9 @@ only_docker: "{% if 'serviced' in groups and groups['serviced'] | count > 0  %}f
 # setup snmpd server and configure snmp v2 or v3 
 setup_snmp: "v2"
 
+# setup dnsmasq server to improve docker name resolving
+setup_dnsmasq: false
+
 # repository configuration
 repo_config:
   file_name: /etc/yum.repos.d/serviced.repo

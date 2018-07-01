@@ -9,6 +9,8 @@
 
 set -e
 gcloud_user="$1"
+shift
+terraform_args="$@"
 
 hfile="gc.hosts"
 touch gc.site_vars.yml
@@ -16,22 +18,25 @@ touch gc.site_vars.yml
 # you can add the following params:
 # -var image=debian-9-stretch-v20180611 
 # -var image=ubuntu-1604-xenial-v20180612
+# -var image=ubuntu-1804-bionic-v20180717b
 # -var the_count=2 
-terraform apply -auto-approve
+terraform apply -auto-approve $terraform_args
 
 echo '[docker]' > $hfile
 
 ip=""
 for h in `terraform output nat_ip | tr , ' '`
 do
-  ssh-keygen -R $h
-  ssh-keyscan $h >> ~/.ssh/known_hosts
+  echo "Waiting for $h on 22 ..."
   while ! exec 6<>/dev/tcp/$h/22
   do   
     echo "Waiting for $h on 22 ..."
-  sleep 3
+  sleep 10
   done
   exec 6>&-
+
+  ssh-keygen -R $h
+  ssh-keyscan $h >> ~/.ssh/known_hosts
 
   if [[ -z $ip ]]; then
     ip=$h
@@ -49,7 +54,6 @@ docker
 [zenoss:children]
 serviced
 EOF
-
 if [[ -n $gcloud_user ]]; then
   ./setup gc --user $gcloud_user --become 
   cat <<EOF

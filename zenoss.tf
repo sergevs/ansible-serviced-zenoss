@@ -6,7 +6,7 @@ variable "the_count" {
   default = "1"
 }
 
-// alternative testing images debian-9-stretch-v20180611 , ubuntu-1604-xenial-v20180612
+// alternative testing images debian-9-stretch-v20180611 , ubuntu-1604-xenial-v20180612, ubuntu-1804-bionic-v20180717b
 variable "image" {
   default = "centos-7-v20180507"
 }
@@ -58,6 +58,8 @@ resource "google_compute_instance" "default" {
 
   metadata_startup_script = <<SCRIPT
 echo "startup script"
+[[ `lsb_release -cs` == 'bionic' ]] && apt-get -y install python
+[[ `lsb_release -is` == 'Ubuntu' ]] && service sshguard stop
 SCRIPT
 }
 

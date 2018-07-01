@@ -1,15 +1,22 @@
-# ansible-serviced-zenoss
+# Zenoss Deployment Tool
 Ansible playbook to deploy docker, [serviced](https://github.com/control-center/serviced) and [zenoss monitoring system](https://www.zenoss.com)
 
 # Overview
-The primary purpose of the playbook is to prepare the environment which is required to run zenoss:
+The primary purpose of the playbook is to deploy Zenoss Core to your own bare bone server or a virtual host:
 * deploy docker with lvm storage thin pool 
 * deploy serviced according to [requirements](https://www.zenoss.com/services-support/documentation/cc-install-guide) optionally deploy a serviced cluster, which in the turn can be used to implement zenoss distributed monitoring
-* deploy zenoss
+* deploy and run Zenoss Core
+
+# Key features
+* Support Zenoss deployments to Debian and Ubuntu operation systems.
+* Fully automated deployments 
+* Cloud ready: one click [Google Cloud Engine deployment](README.md#google-cloud-deployment)
+
+# Quick start
+Install Ansible. Put your host to the [hosts](hosts) and configure **lvm_dev** variable. Proceed to Usage section :)
 
 # Configuration
 The configuration options are documented at [group_vars](group_vars) files. You can amend variables there or override it [site_vars.yml](site_vars.yml)
-Put hosts to the [hosts](hosts). It's possible to deploy only docker.
 
 ## Host variables:
 * **lvm_dev**   : block device for lvm and docker thin pool. the value of global variable will be used if not set.
@@ -34,17 +41,17 @@ At least one spare partition(>= 30 Gb) must be available and configured(**lvm_de
 Supported OS: 
 * Redhat / CentOS 7
 * Debian Stretch
-* Ubuntu Xenial
+* Ubuntu Xenial, Bionic
 
-[ansible](https://www.ansible.com): 2.3.0
+[ansible](https://www.ansible.com): >= 2.3.0
 
-# Testing
+# Google Cloud Deployment
 The playbook tested for serviced 1.5.0 and zenoss 6.1.2. Google cloud host is used for deployment as a reproducible clean environment.
-For a convenience [Terraform](https://www.terraform.io) script is supplied, see [zenoss.tf](zenoss.tf)
+You have to setup [Terraform](https://www.terraform.io) than [zenoss.tf](zenoss.tf) will be used to create GCE instance.
 
-See also [test](test) script to test full cycle deployment to google cloud:
+Run [gce_deploy](gce_deploy) script for full cycle deployment to google cloud:
 ```
-  ./test <your google cloud ssh key username>
+  ./gce_deploy <your google cloud ssh key username> [ terraform options ]
 ``` 
 
 # Further development

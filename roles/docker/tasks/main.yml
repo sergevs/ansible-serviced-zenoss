@@ -1,14 +1,5 @@
-- name: install packages
-  package: name={{ item }}
-  with_items:
-  - dnsmasq
-  - "{{ docker_package }}"
-
-- name: copy dnsmasq configuration
-  copy: src=dnsmasq-docker.conf dest=/etc/dnsmasq.d/dnsmasq-docker.conf
-
-- name: restart dnsmasq
-  service: name=dnsmasq state=restarted enabled=yes
+- name: install docker package
+  package: name="{{ docker_package }}"
 
 - name: create docker dir
   file: dest=/etc/docker state=directory
