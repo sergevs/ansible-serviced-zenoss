@@ -2,10 +2,10 @@
 Ansible playbook to deploy docker, [serviced](https://github.com/control-center/serviced) and [zenoss monitoring system](https://www.zenoss.com)
 
 # Overview
-The primary purpose of the playbook is to prepare the environment which is required to run zenoss:
+The primary purpose of the playbook is to deploy Zenoss Core to your own bare bone server or a virtual host:
 * deploy docker with lvm storage thin pool 
 * deploy serviced according to [requirements](https://www.zenoss.com/services-support/documentation/cc-install-guide) optionally deploy a serviced cluster, which in the turn can be used to implement zenoss distributed monitoring
-* deploy zenoss
+* deploy and run Zenoss Core
 
 # Configuration
 The configuration options are documented at [group_vars](group_vars) files. You can amend variables there or override it [site_vars.yml](site_vars.yml)
