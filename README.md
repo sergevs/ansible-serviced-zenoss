@@ -46,3 +46,6 @@ See also [test](test) script to test full cycle deployment to google cloud:
 ```
   ./test <your google cloud ssh key username>
 ``` 
+
+# Further development
+There are many features planned. Please visit [Project support page](https://serge.ocslab.com) if you like to appreciate the work.
