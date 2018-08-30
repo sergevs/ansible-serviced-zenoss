@@ -53,6 +53,3 @@ Run [gce_deploy](gce_deploy) script for full cycle deployment to google cloud:
 ```
   ./gce_deploy <your google cloud ssh key username> [ terraform options ]
 ``` 
-
-# Further development
-There are many features planned. Please visit [Project support page](https://serge.ocslab.com) if you like to appreciate the work.
