@@ -16,7 +16,7 @@ serviced_user: serviced
 #serviced_user_password: "$1$C.C6utQP$eZKwU1tWfhDP95Xi763FO/"
 
 # serviced package name and version to install
-serviced_package: "serviced-1.5.0"
+serviced_package: "serviced-1.5.1"
 
 # pull the images
 # comment the lines below if you don't want to download serviced and zenoss installers
@@ -26,7 +26,7 @@ serviced_images:
   - https://s3.amazonaws.com/community-artifacts/install-zenoss-isvcs-zookeeper_v10.run
   - https://s3.amazonaws.com/community-artifacts/install-zenoss-hbase_24.0.8.run
   - https://s3.amazonaws.com/community-artifacts/install-zenoss-opentsdb_24.0.8.run
-  - https://s3.amazonaws.com/community-artifacts/install-zenoss-core_6.1_6.1.2_1.run
+  - https://s3.amazonaws.com/community-artifacts/install-zenoss-core_6.2_6.2.1_1.run
 
 # download images to ansible host, set to true
 # if the target host is behind firewall and does not have internet access

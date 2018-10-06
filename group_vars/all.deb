@@ -28,4 +28,4 @@ docker_package: docker-ce
 serviced_package: serviced
 
 # service definition package
-zenoss_service_package: zenoss-core-service=6.1.2-1
+zenoss_service_package: zenoss-core-service=6.2.1-1
