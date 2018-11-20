@@ -36,7 +36,7 @@
   register: pv
   ignore_errors: yes
 
-- name: check volumes presense
+- name: check volumes presence
   debug: msg="WARNING physical volumes already exists, nothing will be created. Please remove physical volumes" 
   when: not ansible_check_mode and pv.stdout_lines | count > 0 and not destroy_data
 
