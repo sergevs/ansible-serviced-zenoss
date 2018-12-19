@@ -1,6 +1,11 @@
 {
   "storage-driver": "devicemapper",
   "log-level": "warn",
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "5"
+  },
   "storage-opts": ["dm.mountopt=discard", "dm.thinpooldev=/dev/mapper/{{ lvg_name }}-docker--pool"]
   {% if SERVICED_MASTER_IP is defined %}
   , "insecure-registries": ["{{ SERVICED_MASTER_IP }}:5000"]
