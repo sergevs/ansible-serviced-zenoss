@@ -32,15 +32,17 @@ setup_dnsmasq: false
 repo_config:
   file_name: /etc/yum.repos.d/serviced.repo
   content: |
-    [zenoss-stable]
-    name = Zenoss Stable Repository
-    baseurl = http://get.zenoss.io/yum/zenoss/stable/centos/el7/os/x86_64
+    [bintray-sergevs42-zenoss-ce-rpm]
+    name=bintray-sergevs42-zenoss-ce-rpm
+    baseurl=https://dl.bintray.com/sergevs42/zenoss-ce-rpm
+    gpgcheck=1
     enabled=1
-    gpgcheck=0
-    gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-ZENOSS
+    gpgkey=https://bintray.com/user/downloadSubjectPublicKey?username=sergevs42
 
     [docker-ce]
     name = docker ce
     baseurl = https://download.docker.com/linux/centos/7/x86_64/stable
-    gpgcheck=0
-    exclude=docker-ce-17.12* docker-ce-18.03*
+    gpgcheck=1
+    enabled=1
+    exclude=docker-ce-17.1* docker-ce-18*
+    gpgkey=https://download.docker.com/linux/centos/gpg

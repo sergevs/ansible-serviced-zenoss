@@ -17,15 +17,14 @@ repo_config_commands:
   - apt-get install -y apt-transport-https ca-certificates curl software-properties-common python-selinux
   - curl https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg | apt-key add -
   - add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution | lower }} $(lsb_release -cs) stable"
-  - curl https://download.tuxfamily.org/ach/gpg | apt-key add -
-  - add-apt-repository "deb [arch=amd64] https://download.tuxfamily.org/ach/{{ ansible_distribution | lower }} $(lsb_release -cs) main"
+  - curl https://bintray.com/user/downloadSubjectPublicKey?username=sergevs42 | apt-key add -
+  - add-apt-repository "deb https://dl.bintray.com/sergevs42/zenoss-ce-deb $(lsb_release -cs) main"
   - apt-get update
 
 # docker package
-docker_package: docker-ce
-
-# serviced package
-serviced_package: serviced
+docker_versions: { 'stretch': '17.09.1~ce-0~debian', 'xenial': '17.09.1~ce-0~ubuntu', 'bionic': '18.03.1~ce~3-0~ubuntu' }
+  
+docker_package: docker-ce={{ docker_versions[ansible_distribution_release] }}
 
 # service definition package
-zenoss_service_package: zenoss-core-service=6.2.1-1
+zenoss_service_package: zenoss-core-service

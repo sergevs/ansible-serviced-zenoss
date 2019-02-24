@@ -20,34 +20,9 @@
 #- debug: msg="{{ SERVICED_MASTER }} {{ serviced_images }}"
 #  tags: always
 
-- block:
-  - name: download installers locally
-    local_action: get_url url={{ item }} dest={{ inventory_dir }}/workdir/{{ item | basename }}
-    with_items: "{{ serviced_images }}"
-    when: images_local_download
-    become: false
-    run_once: true
-
-  - name: copy installers to serviced master host
-    copy: src={{ inventory_dir }}/workdir/{{ item | basename }} dest=/tmp/{{ item | basename }} mode=755
-    with_items: "{{ serviced_images }}"
-    when: images_local_download
-
-  - name: download installers to serviced master host
-    get_url: url={{ item }} dest=/tmp/{{ item | basename }} mode=755
-    with_items: "{{ serviced_images }}"
-    when: not images_local_download
-    become: false
-    run_once: true
-
-  - name: load images to docker
-    command: ./{{ item | basename }} -y chdir=/tmp
-    with_items: "{{ serviced_images }}"
-  
-  - name: remove installers
-    file: dest=/tmp/{{ item | basename }} state=absent
-    with_items: "{{ serviced_images }}"
-
+- name: load images to docker
+  command: docker pull {{ item }}
+  with_items: "{{ serviced_images }}"
   when: serviced_images is defined and SERVICED_MASTER == "1"
   tags: dl_images
 

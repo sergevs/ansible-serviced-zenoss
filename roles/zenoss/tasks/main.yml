@@ -75,5 +75,5 @@
   tags: test
 
 - name: add monitoring for collector hosts
-  command: serviced service attach localhost/zenmodeler sudo -Hi -u zenoss zendisc run --deviceclass /Server/Linux -d {{ ansible_hostname }}
+  command: serviced service attach localhost/zenmodeler su - zenoss -c "zendisc run --deviceclass /Server/Linux -d {{ ansible_hostname }}"
   tags: collector
