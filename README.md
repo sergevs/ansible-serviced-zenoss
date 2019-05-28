@@ -47,7 +47,7 @@ Supported OS:
 
 # Google Cloud Deployment
 The playbook tested for serviced 1.5.1 and zenoss 6.2.1. Google cloud host is used for deployment as a reproducible clean environment.
-You have to setup [Terraform](https://www.terraform.io) than [zenoss.tf](zenoss.tf) will be used to create GCE instance.
+You have to setup [Terraform](https://www.terraform.io) than [zenoss.tf](zenoss.tf) may be used to create GCE instance.
 
 Run [gce_deploy](gce_deploy) script for full cycle deployment to google cloud:
 ```
